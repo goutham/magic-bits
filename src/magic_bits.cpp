@@ -227,6 +227,7 @@ void MagicBits(const std::vector<Direction>& directions,
   for (int i = 0; i < SQUARES; ++i) {
     std::vector<U64> tmp_attack_table;
     GenerateMagic(directions, i, shifts[i], &magics[i], &tmp_attack_table);
+    offsets[i] = attack_table->size();
     attack_table->insert(attack_table->end(),
                          tmp_attack_table.begin(),
                          tmp_attack_table.end());
