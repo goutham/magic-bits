@@ -192,9 +192,12 @@ void GenerateMagic(const std::vector<Direction>& directions,
     attacks.push_back(attack);
   }
 
+  // No bishop or rook attack can cover all squares of the board.
+  static const U64 kInvalidAttack = ~0ULL;
+
   // Trial and error approach to generate magics.
   while (true) {
-    std::vector<U64> table(1U << shift_bits, 0ULL);
+    std::vector<U64> table(1U << shift_bits, kInvalidAttack);
     U64 candidate_magic = ZeroBitBiasedRandom();
     bool collision = false;
     for (int k = 0; k < occupancies.size(); ++k) {
@@ -202,7 +205,7 @@ void GenerateMagic(const std::vector<Direction>& directions,
       const U64 attack = attacks.at(k);
       const int offset =
           (occupancy * candidate_magic) >> (64 - shift_bits);
-      if (table.at(offset) == 0ULL || table.at(offset) == attack) {
+      if (table.at(offset) == kInvalidAttack || table.at(offset) == attack) {
         table.at(offset) = attack;
       } else {
         collision = true;
