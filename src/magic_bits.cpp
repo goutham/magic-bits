@@ -157,8 +157,6 @@ U64 GenerateAttack(const Direction& direction,
   return attack_bb;
 }
 
-namespace magic {
-
 // Returns a unsigned 64 bit random number.
 U64 U64Rand() {
   return (U64(0xFFFF & rand()) << 48) |
@@ -234,8 +232,6 @@ void MagicBits(const std::vector<Direction>& directions,
   }
 }
 
-}
-
 template <typename Container>
 void Write(const std::string& filename, const Container& c) {
   std::fstream ofs(filename.c_str(), std::ios::out);
@@ -287,20 +283,20 @@ int main(int argc, char** argv) {
     Direction(Direction::SOUTH_WEST)
   });
 
-  magic::MagicBits(rook_directions,
-                   rook_shifts,
-                   rook_magics,
-                   &rook_attack_table,
-                   rook_offsets);
+  MagicBits(rook_directions,
+            rook_shifts,
+            rook_magics,
+            &rook_attack_table,
+            rook_offsets);
   Write("rook_magics.magic", rook_magics);
   Write("rook_offsets.magic", rook_offsets);
   Write("rook_attack_table.magic", rook_attack_table);
 
-  magic::MagicBits(bishop_directions,
-                   bishop_shifts,
-                   bishop_magics,
-                   &bishop_attack_table,
-                   bishop_offsets);
+  MagicBits(bishop_directions,
+            bishop_shifts,
+            bishop_magics,
+            &bishop_attack_table,
+            bishop_offsets);
   Write("bishop_magics.magic", bishop_magics);
   Write("bishop_offsets.magic", bishop_offsets);
   Write("bishop_attack_table.magic", bishop_attack_table);
