@@ -246,7 +246,7 @@ void Write(const std::string& filename, const Container& c) {
 }
 
 int main(int argc, char** argv) {
-  static const int rook_shifts[64] = {
+  static const int rook_shifts[SQUARES] = {
     12, 11, 11, 11, 11, 11, 11, 12,
     11, 10, 10, 10, 10, 10, 10, 11,
     11, 10, 10, 10, 10, 10, 10, 11,
@@ -258,7 +258,7 @@ int main(int argc, char** argv) {
   };
   Write("rook_shifts.magic", rook_shifts);
 
-  static const int bishop_shifts[64] = {
+  static const int bishop_shifts[SQUARES] = {
     6, 5, 5, 5, 5, 5, 5, 6,
     5, 5, 5, 5, 5, 5, 5, 5,
     5, 5, 7, 7, 7, 7, 5, 5,
@@ -270,9 +270,9 @@ int main(int argc, char** argv) {
   };
   Write("bishop_shifts.magic", bishop_shifts);
 
-  U64 rook_magics[64], bishop_magics[64];
+  U64 rook_magics[SQUARES], bishop_magics[SQUARES];
   std::vector<U64> rook_attack_table, bishop_attack_table;
-  int rook_offsets[64], bishop_offsets[64];
+  int rook_offsets[SQUARES], bishop_offsets[SQUARES];
 
   const std::vector<Direction> rook_directions({
     Direction(Direction::NORTH),
