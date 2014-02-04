@@ -1,13 +1,10 @@
+#include "common.h"
+
 #include <algorithm>
 #include <cassert>
-#include <cstdint>
 #include <fstream>
 #include <iostream>
 #include <vector>
-
-#define SQUARES 64
-
-typedef uint64_t U64;
 
 inline unsigned Indx(unsigned row, unsigned col) { return row * 8 + col; }
 inline unsigned Row(unsigned index) { return index / 8; }
@@ -75,6 +72,17 @@ class Direction {
  private:
   D direction_;
 };
+
+U64 MaskBits(const Direction& direction, const int index) {
+  U64 bitboard = 0ULL;
+  int next_index = index;
+  // Exclude source bit and the edge of board in given direction.
+  while ((next_index = direction.NextIndex(next_index)) >= 0 &&
+         direction.NextIndex(next_index) >= 0) {
+    bitboard |= (1ULL << next_index);
+  }
+  return bitboard;
+}
 
 void GenerateOccupancies(const Direction& direction,
                          const int index,
@@ -269,10 +277,6 @@ int main(int argc, char** argv) {
   };
   Write("bishop_shifts.magic", bishop_shifts);
 
-  U64 rook_magics[SQUARES], bishop_magics[SQUARES];
-  std::vector<U64> rook_attack_table, bishop_attack_table;
-  int rook_offsets[SQUARES], bishop_offsets[SQUARES];
-
   const std::vector<Direction> rook_directions({
     Direction(Direction::NORTH),
     Direction(Direction::SOUTH),
@@ -285,6 +289,25 @@ int main(int argc, char** argv) {
     Direction(Direction::SOUTH_EAST),
     Direction(Direction::SOUTH_WEST)
   });
+
+  U64 rook_masks[SQUARES], bishop_masks[SQUARES];
+
+  for (int i = 0; i < SQUARES; ++i) {
+    rook_masks[i] = 0ULL;
+    bishop_masks[i] = 0ULL;
+    for (const Direction& d : rook_directions) {
+      rook_masks[i] |= MaskBits(d, i);
+    }
+    for (const Direction& d : bishop_directions) {
+      bishop_masks[i] |= MaskBits(d, i);
+    }
+  }
+  Write("rook_masks.magic", rook_masks);
+  Write("bishop_masks.magic", bishop_masks);
+
+  U64 rook_magics[SQUARES], bishop_magics[SQUARES];
+  std::vector<U64> rook_attack_table, bishop_attack_table;
+  int rook_offsets[SQUARES], bishop_offsets[SQUARES];
 
   MagicBits(rook_directions,
             rook_shifts,
