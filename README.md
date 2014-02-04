@@ -13,10 +13,10 @@ g++ -std=c++0x -O3 slider_attacks_test.cpp slider_attacks.o -o slider_attacks_te
 $ ./magic_bits
 ```
 
-This will generate several files ending with .magic that are loaded by SliderAttacks class. SliderAttacks class can be used to generate rook, bishop, and queen attacks:
+This will generate several files ending with .magic that are loaded by SliderAttacks class. SliderAttacks class can be used to generate all sliding piece (queen, rook and bishop) attacks.
 
 ```cpp
-// A dummy move generator to show how SliderAttacks can be used.
+// A dummy move generator to show SliderAttacks usage.
 #include "slider_attacks.h"
 
 class MoveGenerator {
