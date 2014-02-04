@@ -18,9 +18,6 @@ struct Magic {
 // Initialize() method must be called before using other methods.
 class SliderAttacks {
  public:
-  SliderAttacks();
-  ~SliderAttacks();
-
   void Initialize();
 
   U64 RookAttacks(const U64 bitboard, const int index) const {

@@ -6,9 +6,6 @@
 #include <fstream>
 #include <iostream>
 
-SliderAttacks::SliderAttacks() {}
-SliderAttacks::~SliderAttacks() {}
-
 template <typename T>
 void ReadFile(const std::string& filename, std::vector<T>* v) {
   std::ifstream ifs(filename.c_str(), std::ios::in);
