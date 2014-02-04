@@ -37,11 +37,11 @@ class SliderAttacks {
  private:
   U64 AttackTableIndex(const U64 bitboard, const Magic& m) const {
     U64 occupancy = bitboard & m.mask;
-    return ((occupancy * m.magic) >> (SQUARES - m.shift)) + m.offset;
+    return ((occupancy * m.magic) >> (kSquares - m.shift)) + m.offset;
   }
 
-  Magic rook_magics_[SQUARES];
-  Magic bishop_magics_[SQUARES];
+  Magic rook_magics_[kSquares];
+  Magic bishop_magics_[kSquares];
   std::vector<U64> rook_attack_table_;
   std::vector<U64> bishop_attack_table_;
 };

@@ -233,7 +233,7 @@ void MagicBits(const std::vector<Direction>& directions,
                U64 magics[],
                std::vector<U64>* attack_table,
                int offsets[]) {
-  for (int i = 0; i < SQUARES; ++i) {
+  for (int i = 0; i < kSquares; ++i) {
     std::vector<U64> tmp_attack_table;
     GenerateMagic(directions, i, shifts[i], &magics[i], &tmp_attack_table);
     offsets[i] = attack_table->size();
@@ -244,7 +244,7 @@ void MagicBits(const std::vector<Direction>& directions,
 }
 
 template <typename Container>
-void Write(const std::string& filename, const Container& c) {
+void WriteToFile(const std::string& filename, const Container& c) {
   std::fstream ofs(filename.c_str(), std::ios::out);
   for (auto iter = std::begin(c); iter != std::end(c); ++iter) {
     ofs << std::hex << *iter << '\n';
@@ -253,7 +253,7 @@ void Write(const std::string& filename, const Container& c) {
 }
 
 int main(int argc, char** argv) {
-  static const int rook_shifts[SQUARES] = {
+  static const int rook_shifts[kSquares] = {
     12, 11, 11, 11, 11, 11, 11, 12,
     11, 10, 10, 10, 10, 10, 10, 11,
     11, 10, 10, 10, 10, 10, 10, 11,
@@ -263,9 +263,9 @@ int main(int argc, char** argv) {
     11, 10, 10, 10, 10, 10, 10, 11,
     12, 11, 11, 11, 11, 11, 11, 12,
   };
-  Write("rook_shifts.magic", rook_shifts);
+  WriteToFile(kRookShifts, rook_shifts);
 
-  static const int bishop_shifts[SQUARES] = {
+  static const int bishop_shifts[kSquares] = {
     6, 5, 5, 5, 5, 5, 5, 6,
     5, 5, 5, 5, 5, 5, 5, 5,
     5, 5, 7, 7, 7, 7, 5, 5,
@@ -275,7 +275,7 @@ int main(int argc, char** argv) {
     5, 5, 5, 5, 5, 5, 5, 5,
     6, 5, 5, 5, 5, 5, 5, 6,
   };
-  Write("bishop_shifts.magic", bishop_shifts);
+  WriteToFile(kBishopShifts, bishop_shifts);
 
   const std::vector<Direction> rook_directions({
     Direction(Direction::NORTH),
@@ -290,9 +290,9 @@ int main(int argc, char** argv) {
     Direction(Direction::SOUTH_WEST)
   });
 
-  U64 rook_masks[SQUARES], bishop_masks[SQUARES];
+  U64 rook_masks[kSquares], bishop_masks[kSquares];
 
-  for (int i = 0; i < SQUARES; ++i) {
+  for (int i = 0; i < kSquares; ++i) {
     rook_masks[i] = 0ULL;
     bishop_masks[i] = 0ULL;
     for (const Direction& d : rook_directions) {
@@ -302,30 +302,30 @@ int main(int argc, char** argv) {
       bishop_masks[i] |= MaskBits(d, i);
     }
   }
-  Write("rook_masks.magic", rook_masks);
-  Write("bishop_masks.magic", bishop_masks);
+  WriteToFile(kRookMasks, rook_masks);
+  WriteToFile(kBishopMasks, bishop_masks);
 
-  U64 rook_magics[SQUARES], bishop_magics[SQUARES];
+  U64 rook_magics[kSquares], bishop_magics[kSquares];
   std::vector<U64> rook_attack_table, bishop_attack_table;
-  int rook_offsets[SQUARES], bishop_offsets[SQUARES];
+  int rook_offsets[kSquares], bishop_offsets[kSquares];
 
   MagicBits(rook_directions,
             rook_shifts,
             rook_magics,
             &rook_attack_table,
             rook_offsets);
-  Write("rook_magics.magic", rook_magics);
-  Write("rook_offsets.magic", rook_offsets);
-  Write("rook_attack_table.magic", rook_attack_table);
+  WriteToFile(kRookMagics, rook_magics);
+  WriteToFile(kRookOffsets, rook_offsets);
+  WriteToFile(kRookAttackTable, rook_attack_table);
 
   MagicBits(bishop_directions,
             bishop_shifts,
             bishop_magics,
             &bishop_attack_table,
             bishop_offsets);
-  Write("bishop_magics.magic", bishop_magics);
-  Write("bishop_offsets.magic", bishop_offsets);
-  Write("bishop_attack_table.magic", bishop_attack_table);
+  WriteToFile(kBishopMagics, bishop_magics);
+  WriteToFile(kBishopOffsets, bishop_offsets);
+  WriteToFile(kBishopAttackTable, bishop_attack_table);
 
   return 0;
 }
