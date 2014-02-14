@@ -84,6 +84,22 @@ U64 MaskBits(const Direction& direction, const int index) {
   return bitboard;
 }
 
+// Generate all piece occupancies along a rank, file or diagonal, in the
+// given direction, with index as the reference point. The square given
+// by the index and the edge of the board in the given direction are not
+// covered. For example, direction = NORTH_EAST, index = 29 (marked by X)
+// will generate all combinations of occupancies for squares marked by #
+// (there are 8 possible occupancies):
+// 8 | 0 0 0 0 0 0 0 0
+// 7 | 0 0 # 0 0 0 0 0
+// 6 | 0 0 0 # 0 0 0 0
+// 5 | 0 0 0 0 # 0 0 0
+// 4 | 0 0 0 0 0 X 0 0
+// 3 | 0 0 0 0 0 0 0 0
+// 2 | 0 0 0 0 0 0 0 0
+// 1 | 0 0 0 0 0 0 0 0
+// -------------------
+//   | A B C D E F G H
 void GenerateOccupancies(const Direction& direction,
                          const int index,
                          std::vector<U64>* bbv) {
