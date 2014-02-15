@@ -73,10 +73,12 @@ class Direction {
   D direction_;
 };
 
+// Masks all the bits from the given index, and along the given direction to 1,
+// excluding the square given by the index and the edge of the board along
+// given direction.
 U64 MaskBits(const Direction& direction, const int index) {
   U64 bitboard = 0ULL;
   int next_index = index;
-  // Exclude source bit and the edge of board in given direction.
   while ((next_index = direction.NextIndex(next_index)) >= 0 &&
          direction.NextIndex(next_index) >= 0) {
     bitboard |= (1ULL << next_index);
