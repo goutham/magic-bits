@@ -87,7 +87,7 @@ U64 MaskBits(const Direction& direction, const int index) {
 // Generate all piece occupancies along a rank, file or diagonal, in the
 // given direction, with index as the reference point. The square given
 // by the index and the edge of the board in the given direction are not
-// covered. For example, direction = NORTH_EAST, index = 29 (marked by X)
+// covered. For example, direction = NORTH_WEST, index = 29 (marked by X)
 // will generate all combinations of occupancies for squares marked by #
 // (there are 8 possible occupancies):
 // 8 | 0 0 0 0 0 0 0 0
