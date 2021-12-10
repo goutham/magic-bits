@@ -1,49 +1,40 @@
 magic-bits
 ==========
 
-Magic-bitboards for Chess -- a C++ library to aid in developing super fast move-generation and evaluation routines in chess programs.
+Magic-bitboards for Chess -- a header-only C++ library to aid in developing super fast move-generation and evaluation routines in chess programs.
 
-Efficient move generation can significantly influence the strength of a chess program as it is a routine that's run so often -- at almost all internal nodes and possibly leaf/eval nodes of an alpha-beta search tree. Sliding pieces (queen, rook and bishop) have a lot of mobility and the squares they can occupy is largely dependent on occupancy of many other self and opponent pieces on the board. This makes it hard to generate moves for sliding pieces efficiently using naive techniques, and "magic bitboards", as is commonly known in the chess programming literature, comes in handy.
-
-The magic bitboards technique, in short, implements a perfect-hashing scheme where a pre-computed magic number is multiplied with the corresponding occupancy bitboard, which is then right-shifted to obtain an index into a pre-computed attack-bitboards table. More details on magic bitboards can be found at  http://chessprogramming.wikispaces.com/Magic+Bitboards. This repository contains code to generate these magic numbers, attack bitboards tables and a SliderAttacks class that loads the data at initialization time and provides methods to efficiently generate queen, rook and bishop moves.
-
-## Status
-
-COMPLETE.
+Efficient move generation can significantly influence the strength of a chess program as it is a routine which is run so often -- at almost all internal nodes and possibly leaf / eval nodes of an alpha-beta search tree. Sliding pieces (queen, rook and bishop) have a lot of mobility and the squares they can occupy is largely dependent on occupancy of many other self and opponent pieces on the board. This makes it hard to generate moves for sliding pieces efficiently using naive techniques, and "magic bitboards", as is commonly known in the chess programming literature, comes in handy. The magic bitboards technique, in short, implements a perfect-hashing scheme where a pre-computed magic number is multiplied with the corresponding occupancy bitboard, which is then right-shifted to obtain an index into a pre-computed attack-bitboards table. More details about magic bitboards can be found at http://chessprogramming.wikispaces.com/Magic+Bitboards.
 
 ## Usage
 
-```
-$ make
-g++ -std=c++0x -O3 magic_bits.cpp -o magic_bits
-g++ -std=c++0x -O3 -c slider_attacks.cpp -o slider_attacks.o
-g++ -std=c++0x -O3 slider_attacks_test.cpp slider_attacks.o -o slider_attacks_test
-$ ./magic_bits
-```
-
-Running ```magic_bits``` creates several files with suffix ```.magic```. SliderAttacks class loads these files, and provides methods to generate moves for sliding pieces.
-
 ```cpp
-// A dummy move generator to show SliderAttacks usage.
-#include "slider_attacks.h"
+// -- move_generator.cpp --
 
-class MoveGenerator {
-  public:
-    MoveGenerator() {
-      slider_attacks_.Initialize();
-    }
-    
-    vector<Move> GenerateQueenMoves(const Board& board, const int queen_index) {
-      U64 queen_attacks = slider_attacks_.QueenAttacks(board.occupancy_bitboard,
-                                                       queen_index);
-      queen_attacks &= ~board.moving_side_bitboard();  // discard self-piece captures
-      return GenerateMovesFromAttackBitBoard(queen_attacks, queen_index);
-    }
-    
-    // Methods to generate moves for other pieces
-    // ...
+// Include the header file to use the magic_bits::Attacks class.
+#include "magic-bits/include/magic_bits.hpp"
 
-  private:
-    SliderAttacks slider_attacks_;
-};
+namespace {
+...
+// Instantiate an object of magic_bits::Attacks class once in your program.
+// If it is used in multiple files, instantiate once (for example in main())
+// and pass it around.
+magic_bits::Attacks attacks;
+...
+}
+
+// An example function that generates queen moves.
+vector<Move> GenerateQueenMoves(const magic_bits::Attacks& attacks,
+                                const Board& board,
+                                int queen_index) {
+  // Get the queen attack bitboard.
+  uint64_t queen_attacks = attacks.Queen(board.occupancy_bitboard, queen_index);
+
+  // Discard self-piece captures.
+  queen_attacks &= ~board.moving_side_bitboard();
+
+  // Convert the moves to a format appropriate in your program:
+  // For each move, queen_index will be the "from" index and each of the set
+  // bits in `queen_attacks` bitboard form the "to" indices.
+  return CreateMoveVectorFromAttackBitBoard(queen_attacks, queen_index);
+}
 ```
