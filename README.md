@@ -18,13 +18,12 @@ namespace {
 // Instantiate an object of magic_bits::Attacks class once in your program.
 // If it is used in multiple files, instantiate once (for example in main())
 // and pass it around.
-magic_bits::Attacks attacks;
+const magic_bits::Attacks attacks;
 ...
 }
 
 // An example function that generates queen moves.
-vector<Move> GenerateQueenMoves(const magic_bits::Attacks& attacks,
-                                const Board& board,
+vector<Move> GenerateQueenMoves(const Board& board,
                                 int queen_index) {
   // Get the queen attack bitboard.
   uint64_t queen_attacks = attacks.Queen(board.occupancy_bitboard, queen_index);
