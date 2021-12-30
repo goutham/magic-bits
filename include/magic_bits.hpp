@@ -2,6 +2,7 @@
 #define __MAGIC_BITS_HPP__
 
 #include <algorithm>
+#include <array>
 #include <cassert>
 #include <cstdint>
 #include <cstdlib>
@@ -296,7 +297,7 @@ private:
   class PreComputedRookMagics {
   public:
     uint64_t operator()() {
-      static constexpr uint64_t rand[] = {
+      static constexpr std::array<uint64_t, kSquares> magics = {
           612498416294952992ULL,  2377936612260610304ULL,  36037730568766080ULL,
           72075188908654856ULL,   144119655536003584ULL,   5836666216720237568ULL,
           9403535813175676288ULL, 1765412295174865024ULL,  3476919663777054752ULL,
@@ -320,7 +321,7 @@ private:
           4977040710267061250ULL, 10097633331715778562ULL, 325666550235288577ULL,
           1100057149646ULL,
       };
-      return rand[i_++];
+      return magics.at(i_++);
     }
 
   private:
@@ -330,7 +331,7 @@ private:
   class PreComputedBishopMagics {
   public:
     uint64_t operator()() {
-      static constexpr uint64_t rand[] = {
+      static constexpr std::array<uint64_t, kSquares> magics = {
           9368648609924554880ULL, 9009475591934976ULL,     4504776450605056ULL,
           1130334595844096ULL,    1725202480235520ULL,     288516396277699584ULL,
           613618303369805920ULL,  10168455467108368ULL,    9046920051966080ULL,
@@ -354,7 +355,7 @@ private:
           3748138521932726784ULL, 9223517207018883457ULL,  9237736128969216257ULL,
           1127068154855556ULL,
       };
-      return rand[i_++];
+      return magics.at(i_++);
     }
 
   private:
