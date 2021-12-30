@@ -13,7 +13,7 @@ The magic bitboards technique, in short, implements a perfect-hashing scheme whe
 
 ### Installation
 
-The library is a self-contained C++ header file to be included:
+Requires C++17 (for example, `g++` with flag `-std=c++17`) or higher to compile. The library itself is a self-contained C++ header file to be included in your program:
 
 ```cpp
 #include "magic-bits/include/magic_bits.hpp"
