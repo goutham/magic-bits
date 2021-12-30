@@ -17,6 +17,8 @@ class Attacks {
 public:
   Attacks() {
 
+// We use pre-computed magics by default but the algorithm to generate magics from first principles
+// is retained for illustrative purposes, and can be enabled by option MAGIC_BITS_REGENERATE_MAGICS.
 #ifdef MAGIC_BITS_REGENERATE_MAGICS
     std::function<uint64_t()> rook_rand_gen = ZeroBitBiasedRandom;
     std::function<uint64_t()> bishop_rand_gen = ZeroBitBiasedRandom;
@@ -36,7 +38,7 @@ public:
   }
 
   // Generates the rook attack bitboard given a board occupancy bitboard and the board index where
-  // the attacking rook is placed.
+  // the attacking rook is placed. Bounds are not checked but it is expected that 0 <= index <= 63.
   uint64_t Rook(const uint64_t occupancy_bitboard, const int index) const {
     return rook_attack_table_[AttackTableIndex(occupancy_bitboard, rook_masks_[index],
                                                rook_magics_[index], rook_shifts_[index],
@@ -44,7 +46,7 @@ public:
   }
 
   // Generates the bishop attack bitboard given a board occupancy bitboard and the board index where
-  // the attacking bishop is placed.
+  // the attacking bishop is placed. Bounds are not checked but it is expected that 0 <= index<= 63.
   uint64_t Bishop(const uint64_t occupancy_bitboard, const int index) const {
     return bishop_attack_table_[AttackTableIndex(occupancy_bitboard, bishop_masks_[index],
                                                  bishop_magics_[index], bishop_shifts_[index],
@@ -52,7 +54,7 @@ public:
   }
 
   // Generates the queen attack bitboard given a board occupancy bitboard and the board index where
-  // the attacking queen is placed.
+  // the attacking queen is placed. Bounds are not checked but it is expected that 0 <= index <= 63.
   uint64_t Queen(const uint64_t occupancy_bitboard, const int index) const {
     return Rook(occupancy_bitboard, index) | Bishop(occupancy_bitboard, index);
   }
