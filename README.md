@@ -1,7 +1,7 @@
 magic-bits
 ==========
 
-Magic-bitboards for Chess -- a header-only C++ library to aid in developing super fast move-generation and evaluation routines in chess programs.
+A C++ header-only library to aid in developing super fast move-generation and evaluation routines in chess programs.
 
 ## Background
 
