@@ -169,11 +169,13 @@ private:
     // 1 | 0 0 0 0 0 0 0 0
     // -------------------
     //   | A B C D E F G H
-    auto generate = [](const Direction& direction, int index, std::vector<uint64_t>* bbv) {
+    auto generate = [&](const Direction& direction) -> std::vector<uint64_t> {
+      std::vector<uint64_t> bbv;
+
       // Number of squares in this direction excluding current square and edge of the board.
       const int num_squares = direction.EdgeDistance(index) - 1;
       if (num_squares <= 0) {
-        return;
+        return bbv;
       }
 
       // Number of possible piece occupancies in these squares along the given direction.
@@ -189,14 +191,14 @@ private:
           assert(next_index != -1);
           bitboard |= (uint64_t(!!(occupancy & bit_mask)) << next_index);
         }
-        bbv->push_back(bitboard);
+        bbv.push_back(bitboard);
       }
+      return bbv;
     };
 
     std::vector<uint64_t> occupancies;
     for (const auto direction : directions) {
-      std::vector<uint64_t> bbv;
-      generate(direction, index, &bbv);
+      const auto bbv = generate(direction);
       if (bbv.empty()) {
         continue;
       }
