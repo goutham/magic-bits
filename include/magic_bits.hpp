@@ -119,78 +119,6 @@ private:
     D direction_;
   };
 
-  class OccupancyCombiner {
-  public:
-    OccupancyCombiner(int index) : index_(index) {}
-
-    // Combines occupancy bitboards by bitwise ORing each stored bitboard with bitboards generated
-    // by GenerateOccupancies along given direction.
-    void Combine(const Direction& direction) {
-      std::vector<uint64_t> bbv;
-      GenerateOccupancies(direction, index_, &bbv);
-      if (bbv.empty()) {
-        return;
-      }
-      if (occupancies_.empty()) {
-        occupancies_.insert(occupancies_.end(), bbv.begin(), bbv.end());
-        return;
-      }
-      std::vector<uint64_t> tmp;
-      for (const uint64_t bb : bbv) {
-        for (const uint64_t occupancy : occupancies_) {
-          tmp.push_back(bb | occupancy);
-        }
-      }
-      occupancies_.swap(tmp);
-    }
-
-    const std::vector<uint64_t>& Occupancies() const { return occupancies_; }
-
-  private:
-    // Generate all piece occupancies along a rank, file or diagonal, in the given direction, with
-    // index as the reference point. The square given by the index and the edge of the board in the
-    // given direction are not covered. For example, direction = NORTH_WEST, index = 29 (marked by
-    // X) will generate all combinations of occupancies for squares marked by # (there are 8
-    // possible occupancies):
-    // 8 | 0 0 0 0 0 0 0 0
-    // 7 | 0 0 # 0 0 0 0 0
-    // 6 | 0 0 0 # 0 0 0 0
-    // 5 | 0 0 0 0 # 0 0 0
-    // 4 | 0 0 0 0 0 X 0 0
-    // 3 | 0 0 0 0 0 0 0 0
-    // 2 | 0 0 0 0 0 0 0 0
-    // 1 | 0 0 0 0 0 0 0 0
-    // -------------------
-    //   | A B C D E F G H
-    static void GenerateOccupancies(const Direction& direction, const int index,
-                                    std::vector<uint64_t>* bbv) {
-      // Number of squares in this direction excluding current square and edge of the board.
-      const int num_squares = direction.EdgeDistance(index) - 1;
-      if (num_squares <= 0) {
-        return;
-      }
-
-      // Number of possible piece occupancies in these squares along the given direction.
-      const unsigned num_occupancies = (1U << num_squares);
-
-      // Create bitboard for each occupancy with the index next to given index as starting point,
-      // along the given direction.
-      for (unsigned occupancy = 0U; occupancy < num_occupancies; ++occupancy) {
-        uint64_t bitboard = 0ULL;
-        int next_index = index;
-        for (unsigned bit_mask = 1U; bit_mask <= occupancy; bit_mask <<= 1) {
-          next_index = direction.NextIndex(next_index);
-          assert(next_index != -1);
-          bitboard |= (uint64_t(!!(occupancy & bit_mask)) << next_index);
-        }
-        bbv->push_back(bitboard);
-      }
-    }
-
-    const int index_;
-    std::vector<uint64_t> occupancies_;
-  };
-
   static size_t AttackTableIndex(const uint64_t bitboard, uint64_t mask, uint64_t magic, int shift,
                                  int offset) {
     uint64_t occupancy = bitboard & mask;
@@ -223,16 +151,75 @@ private:
     return attack_bb;
   }
 
+  // Generate all possible piece occupancies along the given directions from the reference square.
+  static std::vector<uint64_t> GenerateOccupancies(const int index,
+                                                   const std::vector<Direction>& directions) {
+    // Generate all piece occupancies along a rank, file or diagonal, in the given direction, with
+    // index as the reference point. The square given by the index and the edge of the board in the
+    // given direction are not covered. For example, direction = NORTH_WEST, index = 29 (marked by
+    // X) will generate all combinations of occupancies for squares marked by # (there are 8
+    // possible occupancies):
+    // 8 | 0 0 0 0 0 0 0 0
+    // 7 | 0 0 # 0 0 0 0 0
+    // 6 | 0 0 0 # 0 0 0 0
+    // 5 | 0 0 0 0 # 0 0 0
+    // 4 | 0 0 0 0 0 X 0 0
+    // 3 | 0 0 0 0 0 0 0 0
+    // 2 | 0 0 0 0 0 0 0 0
+    // 1 | 0 0 0 0 0 0 0 0
+    // -------------------
+    //   | A B C D E F G H
+    auto generate = [](const Direction& direction, int index, std::vector<uint64_t>* bbv) {
+      // Number of squares in this direction excluding current square and edge of the board.
+      const int num_squares = direction.EdgeDistance(index) - 1;
+      if (num_squares <= 0) {
+        return;
+      }
+
+      // Number of possible piece occupancies in these squares along the given direction.
+      const unsigned num_occupancies = (1U << num_squares);
+
+      // Create bitboard for each occupancy with the index next to given index as starting point,
+      // along the given direction.
+      for (unsigned occupancy = 0U; occupancy < num_occupancies; ++occupancy) {
+        uint64_t bitboard = 0ULL;
+        int next_index = index;
+        for (unsigned bit_mask = 1U; bit_mask <= occupancy; bit_mask <<= 1) {
+          next_index = direction.NextIndex(next_index);
+          assert(next_index != -1);
+          bitboard |= (uint64_t(!!(occupancy & bit_mask)) << next_index);
+        }
+        bbv->push_back(bitboard);
+      }
+    };
+
+    std::vector<uint64_t> occupancies;
+    for (const auto direction : directions) {
+      std::vector<uint64_t> bbv;
+      generate(direction, index, &bbv);
+      if (bbv.empty()) {
+        continue;
+      }
+      if (occupancies.empty()) {
+        occupancies.insert(occupancies.end(), bbv.begin(), bbv.end());
+        continue;
+      }
+      std::vector<uint64_t> tmp;
+      for (const uint64_t bb : bbv) {
+        for (const uint64_t occupancy : occupancies) {
+          tmp.push_back(bb | occupancy);
+        }
+      }
+      occupancies.swap(tmp);
+    }
+    return occupancies;
+  }
+
   static void GenerateMagic(const std::function<uint64_t()>& rand_gen,
                             const std::vector<Direction>& directions, const int index,
                             const int shift_bits, uint64_t* magic,
                             std::vector<uint64_t>* attack_table) {
-    // Generate occupancies.
-    OccupancyCombiner combiner(index);
-    for (const Direction& direction : directions) {
-      combiner.Combine(direction);
-    }
-    std::vector<uint64_t> occupancies = combiner.Occupancies();
+    std::vector<uint64_t> occupancies = GenerateOccupancies(index, directions);
 
     // Generate attacks.
     std::vector<uint64_t> attacks;
