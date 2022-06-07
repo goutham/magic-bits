@@ -290,7 +290,7 @@ private:
     static std::vector<uint64_t> GenerateOccupancies(const int index,
                                                      const std::vector<Direction>& directions) {
       std::vector<uint64_t> occupancies;
-      for (const auto direction : directions) {
+      for (const auto& direction : directions) {
         const auto bbv = GenerateOccupancies(index, direction);
         if (bbv.empty()) {
           continue;
@@ -370,7 +370,7 @@ private:
   };
 
   template <PieceType piece_type>
-  static size_t AttackBitboard(const uint64_t bitboard, const Generator<piece_type>& gen,
+  static uint64_t AttackBitboard(const uint64_t bitboard, const Generator<piece_type>& gen,
                                const int index) {
     return gen.attack_table()[AttackTableIndex(bitboard, gen.masks()[index], gen.magics()[index],
                                                gen.shifts()[index], gen.offsets()[index])];
