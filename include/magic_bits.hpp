@@ -353,7 +353,7 @@ private:
       }
     }
 
-    // Returns a unsigned 64 bit random number.
+    // Returns an unsigned 64 bit random number.
     static uint64_t U64Rand() {
       return (uint64_t(0xFFFF & rand()) << 48) | (uint64_t(0xFFFF & rand()) << 32) |
              (uint64_t(0xFFFF & rand()) << 16) | uint64_t(0xFFFF & rand());
@@ -371,7 +371,7 @@ private:
 
   template <PieceType piece_type>
   static uint64_t AttackBitboard(const uint64_t bitboard, const Generator<piece_type>& gen,
-                               const int index) {
+                                 const int index) {
     return gen.attack_table()[AttackTableIndex(bitboard, gen.masks()[index], gen.magics()[index],
                                                gen.shifts()[index], gen.offsets()[index])];
   }
