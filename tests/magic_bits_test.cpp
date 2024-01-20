@@ -1,5 +1,6 @@
 /*
-g++ magic_bits_test.cpp && ./a.out
+g++ magic_bits_test.cpp -o run_tests && ./run_tests
+g++ magic_bits_test.cpp -DMAGIC_BITS_REGENERATE_MAGICS -o run_tests && ./run_tests
 */
 
 #include "../include/magic_bits.hpp"
